@@ -1,11 +1,10 @@
 fastapi==0.111.0
 uvicorn[standard]==0.29.0
 python-multipart==0.0.9
-crepe==0.0.13
+basic-pitch>=0.2.6
 librosa==0.10.2
 numpy==1.26.4
 scipy==1.13.0
 soundfile==0.12.1
 music21==9.1.0
 torch>=2.0.0
-resampy==0.4.3
