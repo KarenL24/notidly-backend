@@ -42,7 +42,7 @@ def build_score(
 
         cursor = qn.start_beat + qn.duration_beats
 
-    part.append(bar.Barline("final"))
+    part.rightBarline = bar.Barline("final")
     s.append(part)
     return s
 
@@ -101,15 +101,16 @@ def _patch_lily_file(path: str) -> None:
     src = re.sub(r"#'(\S+)\s*=\s*##", r".\1 = ##", src)
 
     paper_block = (
-        "\n\\paper {\n"
+        "\\paper {\n"
         "  top-margin = 25\\mm\n"
         "  bottom-margin = 15\\mm\n"
         "  left-margin = 15\\mm\n"
         "  right-margin = 15\\mm\n"
         "  top-system-spacing.basic-distance = #20\n"
-        "}\n"
+        "}\n\n"
     )
-    src = re.sub(r'(\\version\s+"[^"]+"\s*\n)', lambda m: m.group(1) + paper_block, src)
+    # Prepend paper block before the score — works regardless of version line format
+    src = paper_block + src
 
     with open(path, "w") as f:
         f.write(src)
