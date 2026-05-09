@@ -71,6 +71,7 @@ def score_to_pdf_bytes(score: stream.Score) -> bytes:
     try:
         ly_path = os.path.join(tmp_dir, "score.ly")
         score.write("lily", fp=ly_path)
+        _patch_lily_file(ly_path)
 
         result = subprocess.run(
             ["lilypond", "--pdf", "-o", os.path.join(tmp_dir, "score"), ly_path],
@@ -87,6 +88,20 @@ def score_to_pdf_bytes(score: stream.Score) -> bytes:
     finally:
         import shutil as _shutil
         _shutil.rmtree(tmp_dir, ignore_errors=True)
+
+
+def _patch_lily_file(path: str) -> None:
+    """Fix deprecated syntax that music21 emits but LilyPond 2.14+ removed."""
+    with open(path, "r") as f:
+        src = f.read()
+
+    src = src.replace(r"\RemoveEmptyStaffContext", r"\RemoveEmptyStaves")
+    # #'property = ##t  →  .property = ##t
+    import re
+    src = re.sub(r"#'(\S+)\s*=\s*##", r".\1 = ##", src)
+
+    with open(path, "w") as f:
+        f.write(src)
 
 
 def _detect_key(notes: list[QuantizedNote]) -> key.Key:
