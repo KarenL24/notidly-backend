@@ -109,7 +109,7 @@ def _patch_lily_file(path: str) -> None:
         "  top-system-spacing.basic-distance = #20\n"
         "}\n"
     )
-    src = re.sub(r'(\\version\s+"[^"]+"\s*\n)', r"\1" + paper_block, src)
+    src = re.sub(r'(\\version\s+"[^"]+"\s*\n)', lambda m: m.group(1) + paper_block, src)
 
     with open(path, "w") as f:
         f.write(src)
