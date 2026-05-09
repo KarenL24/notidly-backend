@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from .segment import RawNote
 
 SUPPORTED_METERS = [(4, 4), (3, 4), (6, 8)]
-GRID_DIVISIONS = [1, 0.5, 0.25, 0.125]  # whole, half, quarter, eighth (in quarter-note units)
+GRID_DIVISIONS = [4.0, 2.0, 1.5, 1.0, 0.75, 0.5, 0.25]  # double whole → eighth
 
 
 @dataclass

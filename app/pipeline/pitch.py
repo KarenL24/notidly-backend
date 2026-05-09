@@ -35,9 +35,9 @@ def estimate_pitch(audio: AudioData, **kwargs) -> tuple[list[PitchFrame], list]:
         model_output, _, note_events = predict(
             tmp_path,
             ICASSP_2022_MODEL_PATH,
-            minimum_note_length=60,
+            minimum_note_length=200,   # 200ms — prevents vibrato fragmentation
             minimum_frequency=80.0,
-            maximum_frequency=1100.0,
+            maximum_frequency=800.0,   # cuts out octave-error harmonics above soprano range
             melodia_trick=True,
         )
     finally:
