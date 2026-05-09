@@ -1,9 +1,10 @@
 import io
+import re
 import tempfile
 import os
 import shutil
 import subprocess
-from music21 import stream, note, tempo, meter, key, pitch as m21pitch
+from music21 import stream, note, tempo, meter, key, pitch as m21pitch, bar
 from .quantize import QuantizedNote, RhythmInfo
 
 REST_THRESHOLD_BEATS = 0.25
@@ -41,6 +42,7 @@ def build_score(
 
         cursor = qn.start_beat + qn.duration_beats
 
+    part.append(bar.Barline("final"))
     s.append(part)
     return s
 
@@ -91,14 +93,23 @@ def score_to_pdf_bytes(score: stream.Score) -> bytes:
 
 
 def _patch_lily_file(path: str) -> None:
-    """Fix deprecated syntax that music21 emits but LilyPond 2.14+ removed."""
+    """Fix deprecated syntax and inject paper margins for LilyPond 2.14+."""
     with open(path, "r") as f:
         src = f.read()
 
     src = src.replace(r"\RemoveEmptyStaffContext", r"\RemoveEmptyStaves")
-    # #'property = ##t  →  .property = ##t
-    import re
     src = re.sub(r"#'(\S+)\s*=\s*##", r".\1 = ##", src)
+
+    paper_block = (
+        "\n\\paper {\n"
+        "  top-margin = 25\\mm\n"
+        "  bottom-margin = 15\\mm\n"
+        "  left-margin = 15\\mm\n"
+        "  right-margin = 15\\mm\n"
+        "  top-system-spacing.basic-distance = #20\n"
+        "}\n"
+    )
+    src = re.sub(r'(\\version\s+"[^"]+"\s*\n)', r"\1" + paper_block, src)
 
     with open(path, "w") as f:
         f.write(src)
