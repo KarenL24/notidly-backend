@@ -1,4 +1,5 @@
 app/models/checkpoint.pt
 app/models/checkpoint_1.pt
 app/models/checkpoint_2.pt
+app/models/checkpoint_best.pt
 notidly-full/
