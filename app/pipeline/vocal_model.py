@@ -4,8 +4,7 @@ import torch
 import torch.nn as nn
 import librosa
 
-_MODEL_PATH = os.path.join(os.path.dirname(__file__), "..", "models", "checkpoint.pt")
-_SR = 16000
+_MODEL_PATH = os.path.join(os.path.dirname(__file__), "..", "models", "checkpoint_best.pt")_SR = 16000
 _N_MELS = 128
 _HOP = 256
 _DURATION = 2.0
