@@ -4,7 +4,8 @@ import torch
 import torch.nn as nn
 import librosa
 
-_MODEL_PATH = os.path.join(os.path.dirname(__file__), "..", "models", "checkpoint_best.pt")_SR = 16000
+_MODEL_PATH = os.path.join(os.path.dirname(__file__), "..", "models", "checkpoint_best.pt")
+_SR = 16000
 _N_MELS = 128
 _HOP = 256
 _DURATION = 2.0
@@ -76,3 +77,18 @@ def correct_pitch(audio_samples: np.ndarray, sr: int, basic_pitch_midi: int, con
     if cnn_confidence >= confidence_threshold:
         return cnn_midi
     return basic_pitch_midi
+
+
+def apply_pitch_correction(notes, audio_samples, sr, confidence_threshold=0.7):
+    """Run correct_pitch on each note using its actual position in the audio."""
+    from .segment import RawNote
+    if not _load_model():
+        return notes
+    corrected = []
+    for n in notes:
+        start_sample = int(n.start_sec * sr)
+        window = audio_samples[start_sample:start_sample + int(_DURATION * sr)]
+        new_midi = correct_pitch(window, sr, n.midi_pitch, confidence_threshold)
+        freq_hz = 440.0 * 2 ** ((new_midi - 69) / 12.0)
+        corrected.append(RawNote(n.start_sec, n.end_sec, n.duration_sec, new_midi, freq_hz, n.confidence))
+    return corrected

@@ -6,6 +6,7 @@ from app.pipeline.preprocess import load_and_preprocess
 from app.pipeline.pitch import estimate_pitch
 from app.pipeline.segment import segment_notes
 from app.pipeline.quantize import full_rhythm_analysis
+from app.pipeline.vocal_model import apply_pitch_correction
 from app.pipeline.score import build_score, score_to_pdf_bytes, score_to_musicxml_bytes
 
 wav_path = sys.argv[1] if len(sys.argv) > 1 else "New Recording 3.wav"
